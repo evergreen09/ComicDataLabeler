@@ -32,18 +32,17 @@ class CharacterImageData:
 
 # Usage
 character_directory = '/Users/ltk/Documents/Datasets/opimagedata'
-luffy_number = CharacterImageData('Luffy')
-chopa_number = CharacterImageData('Chopa')
-nami_number = CharacterImageData('Nami')
+luffy = CharacterImageData('Luffy')
+chopa = CharacterImageData('Chopa')
+nami = CharacterImageData('Nami')
 
-luffy_number.update_from_directory(character_directory)
-chopa_number.update_from_directory(character_directory)
-nami_number.update_from_directory(character_directory)
+luffy.update_from_directory(character_directory)
+chopa.update_from_directory(character_directory)
+nami.update_from_directory(character_directory)
 
-print(luffy_number)
-print(chopa_number)
-print(nami_number)
-
+print(luffy.highest_number)
+print(chopa)
+print(nami)
 
 
 
@@ -104,9 +103,17 @@ class ImageCollectorApp:
         self.character_button.pack(pady=10)
         
         # Checkboxes for rectangle sizes
+        self.size_var_25 = tk.IntVar()
+        self.size_var_50 = tk.IntVar()
         self.size_var_100 = tk.IntVar()
         self.size_var_150 = tk.IntVar()
         self.size_var_200 = tk.IntVar()
+
+        self.checkbox_25 = tk.Checkbutton(root, text="25x25", variable=self.size_var_25)
+        self.checkbox_25.pack(pady=5)
+
+        self.checkbox_50 = tk.Checkbutton(root, text="50x50", variable=self.size_var_50)
+        self.checkbox_50.pack(pady=5)
         
         self.checkbox_100 = tk.Checkbutton(root, text="100x100", variable=self.size_var_100)
         self.checkbox_100.pack(pady=5)
@@ -192,43 +199,55 @@ class ImageCollectorApp:
     def create_chopa_rectangle(self):
         if self.canvas:
             size = None
-            if self.size_var_100.get():
-                size = 100
-            elif self.size_var_150.get():
+            if self.size_var_25.get():
+                size = 125
+            elif self.size_var_50.get():
                 size = 150
-            elif self.size_var_200.get():
+            elif self.size_var_100.get():
                 size = 200
+            elif self.size_var_150.get():
+                size = 250
+            elif self.size_var_200.get():
+                size = 300
             
             if size:
-                rect = Rectangle(self.canvas, 100, 100, 100 + size, 100 + size, outline="brown", width=2, label='chopa')
+                rect = Rectangle(self.canvas, 100, 100, size, size, outline="brown", width=2, label='chopa', number=chopa.highest_number)
                 self.rectangles.append(rect)
 
     def create_nami_rectangle(self):
         if self.canvas:
             size = None
-            if self.size_var_100.get():
-                size = 100
-            elif self.size_var_150.get():
+            if self.size_var_25.get():
+                size = 125
+            elif self.size_var_50.get():
                 size = 150
-            elif self.size_var_200.get():
+            elif self.size_var_100.get():
                 size = 200
+            elif self.size_var_150.get():
+                size = 250
+            elif self.size_var_200.get():
+                size = 300
             
             if size:
-                rect = Rectangle(self.canvas, 100, 100, 100 + size, 100 + size, outline="orange", width=2, label='nami')
+                rect = Rectangle(self.canvas, 100, 100, size, size, outline="orange", width=2, label='nami', number=nami.highest_number)
                 self.rectangles.append(rect)
 
     def create_luffy_rectangle(self):
         if self.canvas:
             size = None
-            if self.size_var_100.get():
-                size = 100
-            elif self.size_var_150.get():
+            if self.size_var_25.get():
+                size = 125
+            elif self.size_var_50.get():
                 size = 150
-            elif self.size_var_200.get():
+            elif self.size_var_100.get():
                 size = 200
+            elif self.size_var_150.get():
+                size = 250
+            elif self.size_var_200.get():
+                size = 300
             
             if size:
-                rect = Rectangle(self.canvas, 100, 100, 100 + size, 100 + size, outline="red", width=2, label='luffy')
+                rect = Rectangle(self.canvas, 100, 100, size, size, outline="red", width=2, label='luffy', number=luffy.highest_number)
                 self.rectangles.append(rect)
 
     def crop_image(self):
@@ -237,7 +256,15 @@ class ImageCollectorApp:
                 x1, y1, x2, y2 = rect.get_coords()
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 cropped_image = self.image.crop((x1, y1, x2, y2))
-                cropped_image.save(f"cropped_image_{rect.label}.png")
+                match rect.label:
+                    case 'luffy':
+                        cropped_image.save(os.path.join('/Users/ltk/Documents/Datasets/opimagedata/luffy', f"{rect.label}_{rect.number}.png"))
+                    case 'nami':
+                        cropped_image.save(os.path.join('/Users/ltk/Documents/Datasets/opimagedata/nami', f"{rect.label}_{rect.number}.png"))
+                    case 'chopa':
+                        cropped_image.save(os.path.join('/Users/ltk/Documents/Datasets/opimagedata/chopa', f"{rect.label}_{rect.number}.png"))
+                    case _:
+                        cropped_image.save(f"{rect.label}_{rect.number}.png")
 
 if __name__ == "__main__":
     root = tk.Tk()
