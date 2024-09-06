@@ -1,15 +1,61 @@
 import tkinter as tk
 from tkinter import filedialog, simpledialog
 import os
+import re
 from PIL import Image, ImageTk
 
+class CharacterImageData:
+    def __init__(self, name):
+        self.name = name
+        self.highest_number = 0
+
+    def update_highest_number(self, number):
+        if number > self.highest_number:
+            self.highest_number = number
+
+    def update_from_directory(self, directory):
+        pattern = re.compile(r'.*_(\d+)\.png')
+        subdir_path = os.path.join(directory, self.name.lower())
+
+        if not os.path.isdir(subdir_path):
+            print('Error Loading Images')
+            return
+
+        for image in os.listdir(subdir_path):
+            match = pattern.match(image)
+            if match:
+                number = int(match.group(1))
+                self.update_highest_number(number+1)
+
+    def __str__(self):
+        return f"{self.name}: {self.highest_number}"
+
+# Usage
+character_directory = '/Users/ltk/Documents/Datasets/opimagedata'
+luffy_number = CharacterImageData('Luffy')
+chopa_number = CharacterImageData('Chopa')
+nami_number = CharacterImageData('Nami')
+
+luffy_number.update_from_directory(character_directory)
+chopa_number.update_from_directory(character_directory)
+nami_number.update_from_directory(character_directory)
+
+print(luffy_number)
+print(chopa_number)
+print(nami_number)
+
+
+
+
+
 class Rectangle:
-    def __init__(self, canvas, x1, y1, x2, y2, outline, width, label):
+    def __init__(self, canvas, x1, y1, x2, y2, outline, width, label, number):
         self.canvas = canvas
         self.rect = canvas.create_rectangle(x1, y1, x2, y2, outline=outline, width=width)
         self.label = label
         self.canvas.tag_bind(self.rect, "<ButtonPress-1>", self.on_start)
         self.canvas.tag_bind(self.rect, "<B1-Motion>", self.on_drag)
+        self.number = number
         self.start_x = None
         self.start_y = None
 
